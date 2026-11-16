@@ -2,5 +2,5 @@
 // Supabase > Project Settings > API
 //  - Project URL
 //  - anon public key  (é pública por desenho; quem protege os dados são as regras do banco)
-export const SUPABASE_URL = 'COLE_AQUI_A_PROJECT_URL';
+export const SUPABASE_URL = 'https://kttswrtoobaxthwpeqej.supabase.co';
 export const SUPABASE_ANON_KEY = 'COLE_AQUI_A_ANON_KEY';
