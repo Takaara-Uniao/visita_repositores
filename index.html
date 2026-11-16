@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#2e7d32">
+<title>Visitas e Despesas</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Configuração pendente -->
+<main id="setup" class="hide"><div class="card"><h2>Falta configurar</h2>
+<p>Abra o arquivo <b>config.js</b> e cole a <b>Project URL</b> e a <b>anon key</b> do Supabase.</p></div></main>
+
+<!-- Login -->
+<main id="login" class="login hide">
+  <div class="card">
+    <h2>Visitas e Despesas</h2>
+    <form id="login-form">
+      <label for="l-email">E-mail</label>
+      <input id="l-email" type="email" autocomplete="username" required>
+      <label for="l-senha">Senha</label>
+      <input id="l-senha" type="password" autocomplete="current-password" required>
+      <button class="btn" id="l-btn" type="submit">Entrar</button>
+      <div id="l-msg"></div>
+    </form>
+  </div>
+</main>
+
+<!-- App -->
+<div id="app" class="hide">
+  <header>
+    <div><b id="h-nome"></b><small id="h-role"></small></div>
+    <button id="h-sair" type="button">Sair</button>
+  </header>
+  <nav>
+    <button data-tab="lancar" class="on">Lançar</button>
+    <button data-tab="meus">Meus lançamentos</button>
+    <button data-tab="todos" id="tab-todos" class="hide">Todos</button>
+  </nav>
+
+  <main>
+    <!-- LANÇAR -->
+    <section id="v-lancar">
+      <form id="f" class="card" novalidate>
+        <h2 id="f-titulo">Nova visita</h2>
+
+        <div class="g2">
+          <div><label for="f-data">Data</label><input id="f-data" type="date" required></div>
+          <div><label for="f-motivo">Motivo</label><select id="f-motivo" required></select></div>
+        </div>
+        <label for="f-loja">Loja / cliente</label>
+        <input id="f-loja" list="lojas-lista" autocomplete="off" required>
+        <datalist id="lojas-lista"></datalist>
+        <label for="f-cidade">Cidade</label>
+        <input id="f-cidade" autocomplete="off">
+        <label for="f-acomp">Acompanhante (deixe vazio se foi sozinho)</label>
+        <input id="f-acomp" autocomplete="off" placeholder="Nome">
+
+        <h3>Veículo e KM</h3>
+        <label for="f-veiculo">Veículo</label>
+        <select id="f-veiculo"></select>
+        <div id="km-bloco">
+          <div class="g2">
+            <div><label for="f-kmsaida">KM de saída</label><input id="f-kmsaida" type="number" inputmode="numeric" min="0" max="999999"></div>
+            <div><label for="f-kmchegada">KM de chegada</label><input id="f-kmchegada" type="number" inputmode="numeric" min="0" max="999999"></div>
+          </div>
+          <div class="hint" id="km-hint"></div>
+        </div>
+        <div class="hint hide" id="terceiro-hint">Viagem em veículo de terceiro: não lance KM.</div>
+
+        <h3>Custos (seus)</h3>
+        <div class="g3">
+          <div><label for="f-comb">Combustível</label><input id="f-comb" class="v" type="number" inputmode="decimal" step="0.01" min="0"></div>
+          <div><label for="f-ped">Pedágio</label><input id="f-ped" class="v" type="number" inputmode="decimal" step="0.01" min="0"></div>
+          <div><label for="f-alim">Alimentação</label><input id="f-alim" class="v" type="number" inputmode="decimal" step="0.01" min="0"></div>
+          <div><label for="f-hosp">Hospedagem</label><input id="f-hosp" class="v" type="number" inputmode="decimal" step="0.01" min="0"></div>
+          <div><label for="f-outros">Outros</label><input id="f-outros" class="v" type="number" inputmode="decimal" step="0.01" min="0"></div>
+        </div>
+
+        <h3>Custos do acompanhante</h3>
+        <div class="g3">
+          <div><label for="f-ac-alim">Alimentação</label><input id="f-ac-alim" class="v" type="number" inputmode="decimal" step="0.01" min="0"></div>
+          <div><label for="f-ac-hosp">Hospedagem</label><input id="f-ac-hosp" class="v" type="number" inputmode="decimal" step="0.01" min="0"></div>
+          <div><label for="f-ac-outros">Outros</label><input id="f-ac-outros" class="v" type="number" inputmode="decimal" step="0.01" min="0"></div>
+        </div>
+
+        <label for="f-obs">Observações</label>
+        <textarea id="f-obs" rows="2"></textarea>
+
+        <div class="total">Total: <span id="f-total">R$ 0,00</span></div>
+        <div id="f-msg"></div>
+        <button class="btn" id="f-salvar" type="submit">Salvar visita</button>
+        <button class="btn sec hide" id="f-cancelar" type="button">Cancelar edição</button>
+      </form>
+    </section>
+
+    <!-- MEUS -->
+    <section id="v-meus" class="hide">
+      <div class="kpis">
+        <div class="kpi"><span>Visitas</span><b id="m-vis">0</b></div>
+        <div class="kpi"><span>KM</span><b id="m-km">0</b></div>
+        <div class="kpi"><span>Total</span><b id="m-tot">R$ 0,00</b></div>
+      </div>
+      <div class="card"><h2>Meus lançamentos</h2><div id="m-lista"></div></div>
+    </section>
+
+    <!-- TODOS (supervisor) -->
+    <section id="v-todos" class="hide">
+      <div class="card">
+        <h2>Todos os lançamentos</h2>
+        <div class="g2">
+          <div><label for="t-de">De</label><input id="t-de" type="date"></div>
+          <div><label for="t-ate">Até</label><input id="t-ate" type="date"></div>
+          <div><label for="t-pessoa">Pessoa</label><select id="t-pessoa"></select></div>
+          <div><label for="t-busca">Loja contém</label><input id="t-busca" autocomplete="off"></div>
+        </div>
+        <button class="btn sec" id="t-csv" type="button">Baixar CSV (Excel)</button>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><span>Visitas</span><b id="t-vis">0</b></div>
+        <div class="kpi"><span>KM</span><b id="t-km">0</b></div>
+        <div class="kpi"><span>Total</span><b id="t-tot">R$ 0,00</b></div>
+      </div>
+      <div class="card"><h2>Por pessoa</h2><div class="scroll"><table id="t-resumo"></table></div></div>
+      <div class="card"><h2>Lançamentos</h2><div class="scroll"><table id="t-tabela"></table></div></div>
+    </section>
+  </main>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
